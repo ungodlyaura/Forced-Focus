@@ -21,9 +21,7 @@ Hyprland (Wayland) (Works)
 Uses hyprctl for active window detection and focus control.
 Sway (Wayland) (Untested)
 Uses swaymsg IPC to traverse the window tree and control focus.
-KDE Plasma (Doesn't work/Untested)
-X11: Uses xdotool (primary) and qdbus6 (fallback)
-Wayland: Limited support via qdbus6 (focus control is restricted by design)
+KDE Plasma (Doesn't work)
 
 ---
 
