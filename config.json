@@ -1,0 +1,29 @@
+{
+    "min_unlock_time": 1200,
+    "reward_ratings": [2, 3, 4],
+    "mode": "per_card",
+    "time_per_card": 120,
+    "time_per_second": 10.0,
+    "auto_pause": true,
+    "recent_activity_window": 30,
+    "max_time": 0,
+    "daily_quota": 150,
+    "subtract_on_undo": true,
+    "allow_negative_time": false,
+    "reset_time": "04:00",
+    "notifications_enabled": true,
+    "notification_start_time": 120,
+    "notification_interval": 60,
+    "notification_duration": 3,
+    "exempt_identifiers": [
+        "anki",
+        "org.ankiweb.anki",
+        "anki.exe",
+        "com.github.th_ch.youtube_music",
+        "youtube music",
+        "ytmdesktop"
+    ],
+    "WINDOWS_UNMINIMIZE": true,
+    "WINDOWS_MAXIMIZE": true,
+    "WINDOWS_FULLSCREEN": false
+}
