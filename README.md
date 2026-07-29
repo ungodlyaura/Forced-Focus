@@ -129,3 +129,17 @@ KDE Plasma (Doesn't work)
 * Enforcement runs continuously; while locked, focus will repeatedly return to Anki.
 * Incorrect configuration of `min_unlock_time` will significantly affect usability.
 * Platform-specific window handling may behave differently depending on the window manager or OS limitations.
+
+# Changelog
+=== 2026/08/29 ===
+## Pause focus
+You can now pause enforcement for a while without needing to close Anki or mess with your time/config.
+Repeated presses stacks time
+
+## More window managers
+Added Niri, Awesome WM, and driftwm.
+KDE likely still doesn't work
+
+## Time debt behavior change
+Previously, with `allow_negative_time` on, it only counted into the negative manually while the application is open.
+Free-Time is now stored as an offset from your earned duration and the current time. Meaning it can know the correct time despite Anki being closed.
