@@ -131,7 +131,7 @@ KDE Plasma (Doesn't work)
 * Platform-specific window handling may behave differently depending on the window manager or OS limitations.
 
 # Changelog
-=== 2026/08/29 ===
+=== 2026/7/29 ===
 ## Pause focus
 You can now pause enforcement for a while without needing to close Anki or mess with your time/config.
 Repeated presses stacks time
