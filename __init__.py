@@ -165,6 +165,13 @@ class NiriProvider(BaseProvider):
             pass
 
 class DriftwmProvider(BaseProvider):
+    """driftwm is an infinite-canvas compositor: windows sit at a fixed
+    (x, y) on an infinite canvas and the screen is just a camera looking
+    at it — there's no "restore/maximize" concept like other WMs. So
+    instead we: focus the Anki window, pan the camera to its position
+    (so it's actually inside the viewport — zoom is left untouched), and
+    optionally force driftwm's fullscreen *viewport mode* on top.
+    """
 
     def _msg(self, *args, timeout=2):
         try:
@@ -182,6 +189,9 @@ class DriftwmProvider(BaseProvider):
         return res.stdout.strip().lower()
 
     def _window_position(self, selector):
+        # "move" with no x/y is a read: prints the window's current
+        # center position as "<x> <y>". Kept as raw strings (rather than
+        # parsed floats) so they're passed through to `camera` unchanged.
         res = self._msg("move", selector)
         if res is None or res.returncode != 0:
             return None
@@ -195,12 +205,22 @@ class DriftwmProvider(BaseProvider):
 
         focused = self._msg("focus", "anki")
         if focused is None or focused.returncode != 0:
-            return  
+            return  # no window with "anki" in its app_id right now
+
+        # Pan the viewport to Anki's position. Deliberately not using the
+        # "center-window" action here, since that also resets zoom to 1.0
+        # and zoom should be left alone.
         pos = self._window_position("anki")
         if pos is not None:
             self._msg("camera", pos[0], pos[1])
 
         if cfg.get("DRIFTWM_FULLSCREEN", False):
+            # driftwm's fullscreen is a viewport mode, not a per-window
+            # flag, and "toggle-fullscreen" is the only lever IPC exposes
+            # for it — any canvas action (including the focus/camera calls
+            # above) already drops fullscreen, so by the time we get here
+            # it should be off, meaning this toggle reliably turns it ON
+            # rather than flipping an already-active fullscreen back off.
             self._msg("action", "toggle-fullscreen")
 
 class AwesomeProvider(BaseProvider):
@@ -290,6 +310,10 @@ def _driftwm_active():
     runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
     if not runtime_dir:
         return False
+    # driftwm writes this file itself while running, so its presence is a
+    # reliable "is a driftwm session actually up" signal. There's no
+    # dedicated env var for it like SWAYSOCK / HYPRLAND_INSTANCE_SIGNATURE /
+    # NIRI_SOCKET.
     return os.path.exists(os.path.join(runtime_dir, "driftwm", "state"))
 
 def get_provider():
@@ -551,6 +575,11 @@ class ForceFocusTray(QSystemTrayIcon):
             if should_pause:
                 state["unlock_timestamp"] += 1.0
                 ff.save_state()
+
+            if not cfg.get("allow_negative_time", False):
+                if state["unlock_timestamp"] < time.time():
+                    state["unlock_timestamp"] = time.time()
+                    ff.save_state()
 
             remaining = state["unlock_timestamp"] - time.time()
             cards = state.get("cards_today", 0)
